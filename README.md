@@ -29,36 +29,36 @@ The project progressively demonstrates the complete workflow from generating act
 
 ##  Lab Architecture
 
+## Lab Architecture
+
 ### System Specifications
 
-| System | Role | IP Address |
-| :--- | :--- | :--- |
+| **System** | **Role** | **IP Address** |
+|---|---|---|
 | **Ubuntu Linux** | Wazuh Manager / Indexer / Dashboard | `192.168.56.104` |
-| **Windows 11** | Monitored Endpoint | `192.168.56.105` |
+| **Windows 11** | Monitored Endpoint / Wazuh Agent / Sysmon | `192.168.56.105` |
+| **Kali Linux** | Attack / Security Testing Machine | `192.168.56.102` |
 
-###  Network & Virtualization Topology
+### Network & Virtualization Topology
 
-* **Virtualization:** VirtualBox
-* **Network Mode:** Isolated virtual lab networking
-
-```
-+------------------------------------+
-|        Ubuntu Wazuh Server         |
-|           192.168.56.104           |
-+-----------------+------------------+
-                  |
-                  | TCP Port 1514 (Agent Communication)
-                  |
-                  v
-+------------------------------------+
-|        Windows 11 Endpoint         |
-|           192.168.56.105           |
-+------------------------------------+
+```text
+                         Isolated Virtual Lab
+                                  |
+              +-------------------+-------------------+
+              |                   |                   |
+              v                   v                   v
+      Ubuntu Linux           Windows 11          Kali Linux
+      Wazuh Server           Monitored            Attack /
+      192.168.56.104         Endpoint             Testing
+              |              192.168.56.105       192.168.56.102
+              |                   ^
+              |                   |
+              +---- TCP 1514 -----+
 ```
 
 ---
 
-## 🛠️ Tools & Technologies
+##  Tools & Technologies
 
 * **SIEM & Monitoring:**
   * Wazuh Manager
@@ -171,13 +171,15 @@ Get-WinEvent -LogName "Microsoft-Windows-Sysmon/Operational" -MaxEvents 5 | Sele
 
 ---
 
-##  Attack & Detection Testing
+## Attack & Detection Testing
 
-The attack testing phase is performed progressively and strictly inside the isolated lab environment.
+The attack and detection testing phase is performed progressively and strictly inside the isolated lab environment.
+
+Each scenario is conducted as a controlled security test. The objective is to understand how endpoint activity is generated, collected, detected, investigated, documented, and handled from a SOC analyst perspective.
 
 ### Testing Methodology Flowchart
 
-```
+```text
 1. Generate Controlled Activity
               |
               v
@@ -193,76 +195,49 @@ The attack testing phase is performed progressively and strictly inside the isol
 5. Wazuh Manager Processes Events
               |
               v
-6. Wazuh Rules Analyze Activity
+6. Wazuh Decoders Parse Event Data
               |
               v
-7. Alert Generated
+7. Wazuh Rules Analyze Activity
               |
               v
-8. SOC Investigation
+8. Alert Generated
               |
               v
-9. Determine True/False Positive
+9. Initial Alert Triage
               |
               v
-10. Document Findings
+10. Identify Wazuh Rule & Evidence
+              |
+              v
+11. Correlate Related Events
+              |
+              v
+12. Create SOC Ticket
+              |
+              v
+13. Investigate Activity
+              |
+              v
+14. Determine Verdict
+        /             \
+       /               \
+ Benign / FP        Suspicious / TP
+       \               /
+        \             /
+              v
+15. Response / Escalation
+              |
+              v
+16. Document Investigation
+              |
+              v
+17. Create / Update Playbook
+
 ```
 
 ---
 
-##  Planned Testing Scenarios
-
-### 1. Network Reconnaissance
-* **Status:** `Planned`
-* **Objective:** Demonstrate how network reconnaissance activity generates endpoint and network telemetry and verify whether Wazuh detects the activity.
-* **Investigation Areas:** Source IP, Destination IP, Destination ports, Protocol, Windows events, Sysmon events, Wazuh detection rules, Alert severity, MITRE ATT&CK mapping.
-
----
-
-### 2. Windows Authentication Failures
-* **Status:** `Planned`
-* **Objective:** Generate controlled authentication failures and investigate the resulting Windows Security events.
-* **Investigation Areas:** Event ID, Account name, Source address, Logon type, Authentication failure reason, Number of attempts, Wazuh alert.
-
----
-
-### 3. Multiple Authentication Failures / Brute-Force Simulation
-* **Status:** `Planned`
-* **Objective:** Generate repeated authentication failures in the isolated lab and investigate whether Wazuh correlates the activity into a higher-severity detection.
-* **Correlation Flow:**
-  ```
-  Individual Events ➔ Repeated Events ➔ Correlation ➔ Wazuh Detection ➔ Alert ➔ SOC Investigation
-  ```
-
----
-
-### 4. Suspicious Process Execution
-* **Status:** `Planned`
-* **Objective:** Generate controlled process activity and investigate the telemetry collected by Sysmon and Wazuh.
-* **Investigation Areas:** Process name, Parent process, Process ID (PID), Command line arguments, User account, File hash, Timestamp, Sysmon Event ID, Wazuh rule.
-
----
-
-### 5. PowerShell Activity
-* **Status:** `Planned`
-* **Objective:** Investigate PowerShell execution and understand how endpoint telemetry can identify potentially suspicious command execution.
-* **Investigation Areas:** PowerShell process, Parent process, Command line parameters, User account, Sysmon telemetry, Windows event logs, Wazuh detection.
-
----
-
-### 6. File Creation / Modification
-* **Status:** `Planned`
-* **Objective:** Generate controlled file activity and investigate how Sysmon and Wazuh observe file changes.
-* **Investigation Areas:** File path, File name, Creating process, User account, Timestamp, Hash, Wazuh File Integrity Monitoring (FIM).
-
----
-
-### 7. Registry Activity
-* **Status:** `Planned`
-* **Objective:** Perform controlled registry modifications and investigate the resulting telemetry.
-* **Investigation Areas:** Registry path, Registry value, Responsible process, User account, Sysmon Registry Events, Wazuh detection.
-
----
 
 ##  Event Investigation Methodology
 
@@ -279,16 +254,17 @@ For every testing scenario, the following 6-step investigation methodology is fo
 
 ##  Detection Summary Table
 
-| Activity | Windows / Sysmon Evidence | Wazuh Detection | Severity | Status |
-| :--- | :--- | :--- | :---: | :---: |
-| **Normal Windows Activity** | Application / Security / System Events | Baseline | — | `Completed` |
-| **Network Reconnaissance** | TBD | TBD | TBD | `Planned` |
-| **Authentication Failure** | TBD | TBD | TBD | `Planned` |
-| **Multiple Authentication Failures** | TBD | TBD | TBD | `Planned` |
-| **Suspicious Process Execution** | TBD | TBD | TBD | `Planned` |
-| **PowerShell Activity** | TBD | TBD | TBD | `Planned` |
-| **File Activity** | TBD | TBD | TBD | `Planned` |
-| **Registry Activity** | TBD | TBD | TBD | `Planned` |
+
+| **Activity** | **Windows / Sysmon Evidence** | **Wazuh Detection** | **Severity** | **Verdict** | **Status** |
+|---|---|---|---|---|---|
+| **Normal Windows Activity** |  |  | — | Benign | `Completed` |
+| **Network Reconnaissance** | — | — | TBD | TBD | `Planned` |
+| **Authentication Failure** | — | — | TBD | TBD | `Planned` |
+| **Multiple Authentication Failures** | — | — | TBD | TBD | `Planned` |
+| **Suspicious Process Execution** | — | — | TBD | TBD | `Planned` |
+| **PowerShell Activity** | — | — | TBD | TBD | `Planned` |
+| **File Activity** | — | — | TBD | TBD | `Planned` |
+| **Registry Activity** | — | — | TBD | TBD | `Planned` |
 
 > *Note: Detection results will be added only after the activity is tested and verified in the lab.*
 
@@ -329,6 +305,8 @@ Testing Evidence ➔ Windows Event ➔ Sysmon Event ➔ Wazuh Alert ➔ Alert In
 
 ##  Project Progress
 
+
+### Infrastructure
 - [x] Virtual Lab Setup
 - [x] Wazuh Manager Setup
 - [x] Wazuh Indexer Setup
@@ -341,14 +319,18 @@ Testing Evidence ➔ Windows Event ➔ Sysmon Event ➔ Wazuh Alert ➔ Alert In
 - [x] Sysmon Configuration
 - [x] Windows Event Collection
 - [x] Baseline Collection
-- [ ] Network Reconnaissance Testing
-- [ ] Authentication Failure Testing
+
+### Detection & Investigation
+- [ ] Network Reconnaissance
+- [ ] Authentication Failure
 - [ ] Brute-Force Simulation
 - [ ] Suspicious Process Testing
 - [ ] PowerShell Investigation
 - [ ] File Activity Investigation
 - [ ] Registry Activity Investigation
 - [ ] Alert Correlation
+- [ ] SOC Ticketing
+- [ ] Playbook Development
 - [ ] MITRE ATT&CK Mapping
 - [ ] Complete SOC Investigation Reports
 
