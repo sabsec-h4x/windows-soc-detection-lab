@@ -1,4 +1,4 @@
-
+#  HOME SOC LAB
 #  Windows SOC Detection & Threat Analysis Lab — Wazuh + Sysmon
 
 ![Wazuh](https://img.shields.io/badge/SIEM-Wazuh%20v4.14.7-00599C?style=flat&logo=wazuh&logoColor=white)
