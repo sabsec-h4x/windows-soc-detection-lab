@@ -320,21 +320,6 @@ Testing Evidence ➔ Windows Event ➔ Sysmon Event ➔ Wazuh Alert ➔ Alert In
 - [x] Windows Event Collection
 - [x] Baseline Collection
 
-### Detection & Investigation
-- [ ] Network Reconnaissance
-- [ ] Authentication Failure
-- [ ] Brute-Force Simulation
-- [ ] Suspicious Process Testing
-- [ ] PowerShell Investigation
-- [ ] File Activity Investigation
-- [ ] Registry Activity Investigation
-- [ ] Alert Correlation
-- [ ] SOC Ticketing
-- [ ] Playbook Development
-- [ ] MITRE ATT&CK Mapping
-- [ ] Complete SOC Investigation Reports
-
----
 
 ##  Final Goal
 
